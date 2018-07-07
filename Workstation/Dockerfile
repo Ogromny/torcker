@@ -44,8 +44,8 @@ RUN echo "alpine ALL=(ALL) ALL" >> /etc/sudoers
 # Generate the DBUS UUID
 RUN dbus-uuidgen > /etc/machine-id
 
-# Copy start.sh
-ADD etc/supervisord.conf /etc/supervisor/conf.d/
+# Add supervisord configuration file
+ADD etc/supervisord.conf /etc/supervisor/conf.d
 
 # Firefox user.js
 RUN git clone https://github.com/pyllyukko/user.js.git && cd user.js && make systemwide_user.js
