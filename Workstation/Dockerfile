@@ -45,7 +45,7 @@ RUN echo "alpine ALL=(ALL) ALL" >> /etc/sudoers
 RUN dbus-uuidgen > /etc/machine-id
 
 # Add supervisord configuration file
-ADD etc/supervisord.conf /etc/supervisor/conf.d
+ADD etc/supervisord.conf /etc/supervisor/conf.d/
 
 # Firefox user.js
 RUN git clone https://github.com/pyllyukko/user.js.git && cd user.js && make systemwide_user.js
@@ -53,7 +53,7 @@ RUN mv user.js/systemwide_user.js /usr/lib/firefox/mozilla.cfg
 RUN rm -r user.js
 RUN echo -e "pref(\"general.config.obscure_value\", 0);\npref(\"general.config.filename\", \"mozilla.cfg\");" > /usr/lib/firefox/defaults/pref/local-settings.js
 
-ADD configure_firefox.sh /home/alpine
+ADD configure_firefox.sh /home/alpine/
 RUN chmod +x /home/alpine/configure_firefox.sh && /home/alpine/configure_firefox.sh
 
 # alpine configuration
@@ -64,7 +64,7 @@ WORKDIR /home/alpine
 RUN x11vnc -storepasswd ${VNC_PASS} /home/alpine/.vnc_passwd
 
 # CUSTOMIZATION
-ADD custom.zip /home/alpine
+ADD custom.zip /home/alpine/
 RUN unzip custom.zip && rm custom.zip
 
 # Run supervisord
