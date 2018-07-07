@@ -7,8 +7,6 @@ ARG VNC_PASS=alpine
 # Labels
 LABEL maintainer="Ogromny <ogromnycoding@gmail.com>"
 
-#RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
-
 # Update and upgrade the system
 RUN apk update && apk upgrade
 
