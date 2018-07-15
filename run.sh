@@ -109,17 +109,15 @@ function q {
 
 while [[ "${REPLY}" != "quit" ]]; do
   printf "\n\n${blue}%*s${white} %s %s"   "${str_padding}" "${str_workstation}" "Run"  "(rw)"
-#  printf "\n${blue}%*s${white} %s %s"   "${str_padding}" "${str_workstation}" "Stop"  "(sw)"
-  printf "\n${blue}%*s${white} %s %s"   "${str_padding}" "${str_workstation}" "Delete"  "(dw)"
-  printf "\n${blue}%*s${white} %s %s"   "${str_padding}" "${str_workstation}" "Rebuild image"  "(riw)"
-  printf "\n${yellow}%*s${white} %s %s" "${str_padding}" "${str_system}"      "Quit" "(q)"
-  printf "\n${red}%*s${white} "         "${str_padding}" "${str_command}"
+  printf "\n${blue}%*s${white} %s %s"     "${str_padding}" "${str_workstation}" "Delete"  "(dw)"
+  printf "\n${blue}%*s${white} %s %s"     "${str_padding}" "${str_workstation}" "Rebuild image"  "(riw)"
+  printf "\n${yellow}%*s${white} %s %s"   "${str_padding}" "${str_system}"      "Quit" "(q)"
+  printf "\n${red}%*s${white} "           "${str_padding}" "${str_command}"
 
   read
 
   case ${REPLY} in
     "rw") rw;;
-#    "sw") sw;;
     "dw") dw;;
     "riw") riw;;
     "q")  q;;
