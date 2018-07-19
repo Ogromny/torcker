@@ -16,4 +16,4 @@ RUN apk add \
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ tor
 
 # Add tor configuration
-ADD etc/torrc.default /etc/tor/
+ADD etc/torrc /etc/tor/
