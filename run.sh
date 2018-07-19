@@ -19,6 +19,7 @@ white="\033[1;37m"
 str_padding=13
 str_network="[NETWORK]"
 str_workstation="[WORKSTATION]"
+str_gateway="[GATEWAY]"
 str_system="[SYSTEM]"
 str_command="[COMMAND]"
 
@@ -27,7 +28,7 @@ function cn {
   local networks=$(docker network ls -qf name=${network_name})
   if [[ -z "${networks}" ]]; then
     docker network create -d=bridge --subnet=192.168.0.0/24 ${network_name} 1>/dev/null
-    if [[ $? == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${yellow}%*s${white} %s"   "${str_padding}" "${str_network}" "The network has been successfully created"
     else
       printf "\n${yellow}%*s${white} %s"   "${str_padding}" "${str_network}" "error during network creation, see errors above"
@@ -43,7 +44,7 @@ function dn {
 
   if [[ ! -z "${networks}" ]]; then
     docker network rm ${networks} 1>/dev/null
-    if [[ $? == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${yellow}%*s${white} %s"   "${str_padding}" "${str_network}" "The network has been successfully removed"
     else
       printf "\n${yellow}%*s${white} %s"   "${str_padding}" "${str_network}" "error during network deletion, see errors above"
@@ -60,7 +61,7 @@ function rw {
   local containers=$(docker ps -aqf ancestor=${workstation_name})
   if [[ -z "${containers}" ]]; then
     docker run -d -p 5900:5900 ${workstation_name} 1>/dev/null
-    if [[ $? == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "The container has been successfully created"
     else
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Error during container creation, see errors above"
@@ -75,7 +76,7 @@ function sw {
   local containers=$(docker ps -aqf ancestor=${workstation_name})
   if [[ ! -z "${containers}" ]]; then
     docker stop ${containers} 1>/dev/null
-    if [[ $? == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "The container was successfully stopped"
     else
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Error during container stop, see errors above"
@@ -92,7 +93,7 @@ function dw {
   local containers=$(docker ps -aqf ancestor=${workstation_name})
   if [[ ! -z "${containers}" ]]; then
     docker rm ${containers} 1>/dev/null
-    if [[ $? == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "The container has been successfully removed"
     else
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Error while deleting container, see errors above"
@@ -108,7 +109,7 @@ function biw {
   if [[ -z ${image} ]]; then
     printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "The image doesn't exist let us create it"
     docker build -t ${workstation_name} Workstation/ 1>/dev/null
-    if [[ $? == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Image successfully created"
     else
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Error during image creation, see errors above"
@@ -124,7 +125,7 @@ function riw {
   if [[ ! -z  "${images}" ]]; then
     printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Deleting all images of ${workstation_name}"
     docker rmi ${images} 1>/dev/null
-    if [[ $? != 0 ]]; then
+    if [[ $? -eq 0 ]]; then
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Images successfully deleted"
     else
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Error during image deletion, see errors above"
@@ -163,6 +164,9 @@ while [[ "${REPLY}" != "quit" ]]; do
   printf "\n${blue}%*s${white} %s %s"     "${str_padding}" "${str_workstation}" "Run"            "(rw)"
   printf "\n${blue}%*s${white} %s %s"     "${str_padding}" "${str_workstation}" "Delete"         "(dw)"
   printf "\n${blue}%*s${white} %s %s"     "${str_padding}" "${str_workstation}" "Rebuild image"  "(riw)"
+  printf "\n${green}%*s${white} %s %s"    "${str_padding}" "${str_gateway}"     "Run"            "(rg)"
+  printf "\n${green}%*s${white} %s %s"    "${str_padding}" "${str_gateway}"     "Delete"         "(dg)"
+  printf "\n${green}%*s${white} %s %s"    "${str_padding}" "${str_gateway}"     "Rebuild image"  "(rig)"
   printf "\n${white}%*s${white} %s %s"    "${str_padding}" "${str_system}"      "Status"         "(s)"
   printf "\n${white}%*s${white} %s %s"    "${str_padding}" "${str_system}"      "Quit"           "(q)"
   printf "\n${white}%*s${white} "         "${str_padding}" "${str_command}"
@@ -175,6 +179,9 @@ while [[ "${REPLY}" != "quit" ]]; do
     "rw")   rw;;
     "dw")   dw;;
     "riw")  riw;;
+    "rg")   rg;;
+    "dg")   dg;;
+    "rig")  rig;;
     "s")    s;;
     "q")    q;;
     *)      printf "${red}%s" "Unknow command"
