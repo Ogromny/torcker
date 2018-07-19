@@ -12,12 +12,8 @@ RUN apk add \
         fish \
         vim \
         bash \
-        man \
-        supervisor
+        man
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ tor
 
 # Add tor configuration
 ADD etc/torrc.default /etc/tor/
-
-# Add supervisord configuration file
-ADD etc/supervisord.conf /etc/supervisor/conf.d/
