@@ -124,7 +124,7 @@ function biw {
 ## REBUILD IMAGE
 function riw {
   local images=$(docker images -q ${workstation_name})
-  if [[ ! -z  "${images}" ]]; then
+  if [[ ! -z "${images}" ]]; then
     printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Deleting all images of ${workstation_name}"
     docker rmi ${images} 1>/dev/null
     if [[ $? -eq 0 ]]; then
@@ -200,7 +200,7 @@ function dg {
 ## BUILD IMAGE
 function big {
   local image=$(docker images -q ${gateway_name})
-  if [[ -z ${image} ]]; then
+  if [[ -z "${image}" ]]; then
     printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The image doesn't exist let us create it"
     docker build -t ${gateway_name} Gateway/
     if [[ $? -eq 0 ]]; then
