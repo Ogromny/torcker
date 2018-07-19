@@ -21,6 +21,3 @@ ADD etc/torrc.default /etc/tor/
 
 # Add supervisord configuration file
 ADD etc/supervisord.conf /etc/supervisor/conf.d/
-
-# Run supervisord
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
