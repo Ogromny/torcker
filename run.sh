@@ -253,9 +253,8 @@ function s {
 }
 
 function q {
-  dw
-  dg
   dn
+  dw
 
   exit 0
 }
