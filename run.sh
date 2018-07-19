@@ -40,6 +40,8 @@ function cn {
 
 ## DELETE
 function dn {
+  dg
+
   local networks=$(docker network ls -qf name=${network_name})
 
   if [[ ! -z "${networks}" ]]; then
@@ -108,7 +110,7 @@ function biw {
   local image=$(docker images -q ${workstation_name})
   if [[ -z ${image} ]]; then
     printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "The image doesn't exist let us create it"
-    docker build -t ${workstation_name} Workstation/ 1>/dev/null
+    docker build -t ${workstation_name} Workstation/
     if [[ $? -eq 0 ]]; then
       printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "Image successfully created"
     else
@@ -135,12 +137,111 @@ function riw {
   biw
 }
 
+## RUN
+function rg {
+  cn
+  big
+
+  local containers=$(docker ps -aqf ancestor=${gateway_name})
+  if [[ -z "${containers}" ]]; then
+    docker run -d --privileged ${gateway_name} 1>/dev/null
+    if [[ $? -eq 0 ]]; then
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container has been successfully created"
+    else
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Error during container creation, see errors above"
+    fi
+  else
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container already exist"
+  fi
+
+  local containers=$(docker ps -aqf ancestor=${gateway_name})
+  docker network connect --ip ${network_ip} ${network_name} ${containers} 1>/dev/null
+  if [[ $? -eq 0 ]]; then
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container has been successfully connected to the network"
+  else
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Error during network connection, see errors above"
+  fi
+
+  docker exec -d -e USER=root ${containers} /usr/bin/tor
+}
+
+## STOP
+function sg {
+  local containers=$(docker ps -aqf ancestor=${gateway_name})
+  if [[ ! -z "${containers}" ]]; then
+    docker stop ${containers} 1>/dev/null
+    if [[ $? -eq 0 ]]; then
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container was successfully stopped"
+    else
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Error during container stop, see errors above"
+    fi
+  else
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container isn't launched"
+  fi
+}
+
+## DELETE
+function dg {
+  sg
+
+  local containers=$(docker ps -aqf ancestor=${gateway_name})
+  if [[ ! -z "${containers}" ]]; then
+    docker rm ${containers} 1>/dev/null
+    if [[ $? -eq 0 ]]; then
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container has been successfully removed"
+    else
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Error while deleting container, see errors above"
+    fi
+  else
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The container doesn't exist"
+  fi
+}
+
+## BUILD IMAGE
+function big {
+  local image=$(docker images -q ${gateway_name})
+  if [[ -z ${image} ]]; then
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "The image doesn't exist let us create it"
+    docker build -t ${gateway_name} Gateway/
+    if [[ $? -eq 0 ]]; then
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Image successfully created"
+    else
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Error during image creation, see errors above"
+    fi
+  else
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Image already exist"
+  fi
+}
+
+## REBUILD IMAGE
+function rig {
+  local images=$(docker images -q ${gateway_name})
+  if [[ ! -z "${images}" ]]; then
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Deleting all images of ${gateway_name}"
+    docker rmi ${images} 1>/dev/null
+    if [[ $? -eq 0 ]]; then
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Images successfully deleted"
+    else
+      printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "Error during image deletion, see errors above"
+    fi
+  fi
+
+  big
+}
+
 function s {
   local containers=$(docker ps -aqf ancestor=${workstation_name})
   if [[ -z "${containers}" ]]; then
     printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "STOPPED"
   else
     printf "\n${blue}%*s${white} %s"   "${str_padding}" "${str_workstation}" "RUNNING"
+  fi
+
+  local containers=$(docker ps -aqf ancestor=${gateway_name})
+  if [[ -z "${containers}" ]]; then
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "STOPPED"
+  else
+    printf "\n${green}%*s${white} %s"   "${str_padding}" "${str_gateway}" "RUNNING"
   fi
 
   local networks=$(docker network ls -qf name=${network_name})
@@ -153,6 +254,7 @@ function s {
 
 function q {
   dw
+  dg
   dn
 
   exit 0
